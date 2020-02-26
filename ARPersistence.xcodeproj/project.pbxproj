@@ -23,10 +23,9 @@
 		111DC86820ACAB690037F7B1 /* RoundedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedButton.swift; sourceTree = "<group>"; };
 		112FE5661F4F95A200BF85EA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		11E97209209A355F006E3D26 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		35F0FDB76E9A606A84E59401 /* SampleCode.xcconfig */ = {isa = PBXFileReference; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		5C7AB42920DC114B00693DDD /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5CB92B4E20D852B0004D38D8 /* SnapshotAnchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotAnchor.swift; sourceTree = "<group>"; };
-		5FE7E1F05FE4881000000001 /* SampleCode.xcconfig */ = {isa = PBXFileReference; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
-		5FEAA3E05FEA9D0000000001 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE.txt; sourceTree = "<group>"; };
 		842316DC1F2030C300D189D1 /* ARPersistence.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ARPersistence.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		842316DF1F2030C300D189D1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		842316E31F2030C300D189D1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -34,6 +33,7 @@
 		842316EB1F2030C300D189D1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		842316ED1F2030C300D189D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		84ABEA091F3D15E70052D547 /* Assets.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Assets.scnassets; sourceTree = "<group>"; };
+		E292F9BA5F620955E859EA24 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,21 +47,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5FE7E6105FE7E7A000000001 /* Configuration */ = {
+		0F66CEC87ABA0F5130EE75F2 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
-				5FE7E1F05FE4881000000001 /* SampleCode.xcconfig */,
+				35F0FDB76E9A606A84E59401 /* SampleCode.xcconfig */,
 			);
 			name = Configuration;
-			sourceTree = "<group>";
-		};
-		5FEA99705FEA9B0000000001 /* LICENSE */ = {
-			isa = PBXGroup;
-			children = (
-				5FEAA3E05FEA9D0000000001 /* LICENSE.txt */,
-			);
-			name = LICENSE;
-			path = LICENSE;
 			sourceTree = "<group>";
 		};
 		842316D31F2030C300D189D1 = {
@@ -70,8 +61,8 @@
 				5C7AB42920DC114B00693DDD /* README.md */,
 				842316DE1F2030C300D189D1 /* ARPersistence */,
 				842316DD1F2030C300D189D1 /* Products */,
-				5FE7E6105FE7E7A000000001 /* Configuration */,
-				5FEA99705FEA9B0000000001 /* LICENSE */,
+				0F66CEC87ABA0F5130EE75F2 /* Configuration */,
+				9265C1324689158CAFBECF44 /* LICENSE */,
 			);
 			sourceTree = "<group>";
 		};
@@ -100,6 +91,15 @@
 			path = ARPersistence;
 			sourceTree = "<group>";
 		};
+		9265C1324689158CAFBECF44 /* LICENSE */ = {
+			isa = PBXGroup;
+			children = (
+				E292F9BA5F620955E859EA24 /* LICENSE.txt */,
+			);
+			name = LICENSE;
+			path = LICENSE;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -110,7 +110,6 @@
 				842316D81F2030C300D189D1 /* Sources */,
 				842316D91F2030C300D189D1 /* Frameworks */,
 				842316DA1F2030C300D189D1 /* Resources */,
-				1D204A201D2045E000000001,
 			);
 			buildRules = (
 			);
@@ -207,7 +206,7 @@
 /* Begin XCBuildConfiguration section */
 		842316EE1F2030C300D189D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5FE7E1F05FE4881000000001 /* SampleCode.xcconfig */;
+			baseConfigurationReference = 35F0FDB76E9A606A84E59401 /* SampleCode.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -264,7 +263,7 @@
 		};
 		842316EF1F2030C300D189D1 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5FE7E1F05FE4881000000001 /* SampleCode.xcconfig */;
+			baseConfigurationReference = 35F0FDB76E9A606A84E59401 /* SampleCode.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -314,7 +313,7 @@
 		};
 		842316F11F2030C300D189D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5FE7E1F05FE4881000000001 /* SampleCode.xcconfig */;
+			baseConfigurationReference = 35F0FDB76E9A606A84E59401 /* SampleCode.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -334,7 +333,7 @@
 		};
 		842316F21F2030C300D189D1 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5FE7E1F05FE4881000000001 /* SampleCode.xcconfig */;
+			baseConfigurationReference = 35F0FDB76E9A606A84E59401 /* SampleCode.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

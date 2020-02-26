@@ -1,6 +1,6 @@
 # Saving and Loading World Data
 
-Serialize a world tracking session to resume it later on.
+Serialize a world-tracking session to resume it later on.
 
 ## Overview
 
