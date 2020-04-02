@@ -19,6 +19,8 @@ extension ARFrame.WorldMappingStatus: CustomStringConvertible {
             return "Extending"
         case .mapped:
             return "Mapped"
+        @unknown default:
+            return "Unknown"
         }
     }
 }
@@ -38,6 +40,8 @@ extension ARCamera.TrackingState: CustomStringConvertible {
             return "Insufficient Features"
         case .limited(.relocalizing):
             return "Relocalizing"
+        case .limited:
+            return "Unspecified Reason"
         }
     }
 }
@@ -63,6 +67,8 @@ extension ARCamera.TrackingState {
             
         case .limited(.initializing):
             return "Initializing AR session."
+        case .limited:
+            return "Tracking limited - unspecified reason"
         }
     }
 }
