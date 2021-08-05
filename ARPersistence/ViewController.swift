@@ -168,7 +168,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     /// - Tag: RunWithWorldMap
     @IBAction func loadExperience(_ button: UIButton) {
-        let worldMap = worldService.loadExperience(viewController: self)
+        let (worldMap, snapshotData) = worldService.loadExperience()
+        
+        // Display the snapshot image stored in the world map to aid user in relocalizing.
+        if let snapshotData = snapshotData, let snapshot = UIImage(data: snapshotData) {
+            snapshotThumbnail.image = snapshot
+        } else {
+            print("No snapshot image in world map")
+        }
         
         let configuration = defaultConfiguration // this app's standard world tracking settings
         configuration.initialWorldMap = worldMap
@@ -301,7 +308,7 @@ class WorldPersistenceService {
         }
     }
     
-    func loadExperience(viewController: ViewController) -> ARWorldMap {
+    func loadExperience() -> (ARWorldMap, Data?) {
         /// - Tag: ReadWorldMap
         let worldMap: ARWorldMap = {
             guard let data = mapDataFromFile
@@ -315,16 +322,10 @@ class WorldPersistenceService {
             }
         }()
         
-        // Display the snapshot image stored in the world map to aid user in relocalizing.
-        if let snapshotData = worldMap.snapshotAnchor?.imageData,
-            let snapshot = UIImage(data: snapshotData) {
-            viewController.snapshotThumbnail.image = snapshot
-        } else {
-            print("No snapshot image in world map")
-        }
+        let snapshotData = worldMap.snapshotAnchor?.imageData
         // Remove the snapshot anchor from the world map since we do not need it in the scene.
         worldMap.anchors.removeAll(where: { $0 is SnapshotAnchor })
         
-        return worldMap
+        return (worldMap, snapshotData)
     }
 }
