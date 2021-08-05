@@ -12,10 +12,7 @@ class SnapshotAnchor: ARAnchor {
     
     let imageData: Data
     
-    convenience init?(capturing view: ARSCNView) {
-        guard let frame = view.session.currentFrame
-            else { return nil }
-        
+    convenience init?(currentFrame frame: ARFrame) {
         let image = CIImage(cvPixelBuffer: frame.capturedImage)
         let orientation = CGImagePropertyOrientation(cameraOrientation: UIDevice.current.orientation)
         

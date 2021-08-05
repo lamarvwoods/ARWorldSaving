@@ -19,6 +19,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     @IBOutlet weak var loadExperienceButton: UIButton!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var snapshotThumbnail: UIImageView!
+    var worldService = WorldPersistenceService()
     
     // MARK: - View Life Cycle
     
@@ -31,7 +32,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         super.viewDidLoad()
         
         // Read in any already saved map to see if we can load one.
-        if mapDataFromFile != nil {
+        if worldService.mapDataFromFile != nil {
             self.loadExperienceButton.isHidden = false
         }
     }
@@ -150,18 +151,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     }
     
     // MARK: - Persistence: Saving and Loading
-    lazy var mapSaveURL: URL = {
-        do {
-            return try FileManager.default
-                .url(for: .documentDirectory,
-                     in: .userDomainMask,
-                     appropriateFor: nil,
-                     create: true)
-                .appendingPathComponent("map.arexperience")
-        } catch {
-            fatalError("Can't get file save URL: \(error.localizedDescription)")
-        }
-    }()
+   
     
     /// - Tag: GetWorldMap
     @IBAction func saveExperience(_ button: UIButton) {
@@ -169,56 +159,18 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
             guard let map = worldMap
                 else { self.showAlert(title: "Can't get current world map", message: error!.localizedDescription); return }
             
-            // Add a snapshot image indicating where the map was captured.
-            guard let snapshotAnchor = SnapshotAnchor(capturing: self.sceneView)
-                else { fatalError("Can't take snapshot") }
-            map.anchors.append(snapshotAnchor)
-            
-            do {
-                let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
-                try data.write(to: self.mapSaveURL, options: [.atomic])
-                DispatchQueue.main.async {
-                    self.loadExperienceButton.isHidden = false
-                    self.loadExperienceButton.isEnabled = true
-                }
-            } catch {
-                fatalError("Can't save map: \(error.localizedDescription)")
+            self.worldService.saveExperience(map: map, currentFrame: self.sceneView.session.currentFrame) {
+                self.loadExperienceButton.isHidden = false
+                self.loadExperienceButton.isEnabled = true
             }
         }
-    }
-    
-    // Called opportunistically to verify that map data can be loaded from filesystem.
-    var mapDataFromFile: Data? {
-        return try? Data(contentsOf: mapSaveURL)
     }
     
     /// - Tag: RunWithWorldMap
     @IBAction func loadExperience(_ button: UIButton) {
+        let worldMap = worldService.loadExperience(viewController: self)
         
-        /// - Tag: ReadWorldMap
-        let worldMap: ARWorldMap = {
-            guard let data = mapDataFromFile
-                else { fatalError("Map data should already be verified to exist before Load button is enabled.") }
-            do {
-                guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
-                    else { fatalError("No ARWorldMap in archive.") }
-                return worldMap
-            } catch {
-                fatalError("Can't unarchive ARWorldMap from file data: \(error)")
-            }
-        }()
-        
-        // Display the snapshot image stored in the world map to aid user in relocalizing.
-        if let snapshotData = worldMap.snapshotAnchor?.imageData,
-            let snapshot = UIImage(data: snapshotData) {
-            self.snapshotThumbnail.image = snapshot
-        } else {
-            print("No snapshot image in world map")
-        }
-        // Remove the snapshot anchor from the world map since we do not need it in the scene.
-        worldMap.anchors.removeAll(where: { $0 is SnapshotAnchor })
-        
-        let configuration = self.defaultConfiguration // this app's standard world tracking settings
+        let configuration = defaultConfiguration // this app's standard world tracking settings
         configuration.initialWorldMap = worldMap
         sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
 
@@ -258,10 +210,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
                 message = "Tap on the screen to place an object."
             }
             
-        case (.normal, _) where mapDataFromFile != nil && !isRelocalizingMap:
+        case (.normal, _) where worldService.mapDataFromFile != nil && !isRelocalizingMap:
             message = "Move around to map the environment or tap 'Load Experience' to load a saved experience."
             
-        case (.normal, _) where mapDataFromFile == nil:
+        case (.normal, _) where worldService.mapDataFromFile == nil:
             message = "Move around to map the environment."
             
         case (.limited(.relocalizing), _) where isRelocalizingMap:
@@ -313,3 +265,66 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
 }
 
+class WorldPersistenceService {
+    lazy var mapSaveURL: URL = {
+        do {
+            return try FileManager.default
+                .url(for: .documentDirectory,
+                     in: .userDomainMask,
+                     appropriateFor: nil,
+                     create: true)
+                .appendingPathComponent("map.arexperience")
+        } catch {
+            fatalError("Can't get file save URL: \(error.localizedDescription)")
+        }
+    }()
+    
+    // Called opportunistically to verify that map data can be loaded from filesystem.
+    var mapDataFromFile: Data? {
+        return try? Data(contentsOf: mapSaveURL)
+    }
+    
+    func saveExperience(map: ARWorldMap, currentFrame: ARFrame?, didSaveSuccessfully: @escaping ()->Void) {
+        // Add a snapshot image indicating where the map was captured.
+        guard let frame = currentFrame, let snapshotAnchor = SnapshotAnchor(currentFrame: frame)
+            else { fatalError("Can't take snapshot") }
+        map.anchors.append(snapshotAnchor)
+        
+        do {
+            let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
+            try data.write(to: self.mapSaveURL, options: [.atomic])
+            DispatchQueue.main.async {
+                didSaveSuccessfully()
+            }
+        } catch {
+            fatalError("Can't save map: \(error.localizedDescription)")
+        }
+    }
+    
+    func loadExperience(viewController: ViewController) -> ARWorldMap {
+        /// - Tag: ReadWorldMap
+        let worldMap: ARWorldMap = {
+            guard let data = mapDataFromFile
+                else { fatalError("Map data should already be verified to exist before Load button is enabled.") }
+            do {
+                guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
+                    else { fatalError("No ARWorldMap in archive.") }
+                return worldMap
+            } catch {
+                fatalError("Can't unarchive ARWorldMap from file data: \(error)")
+            }
+        }()
+        
+        // Display the snapshot image stored in the world map to aid user in relocalizing.
+        if let snapshotData = worldMap.snapshotAnchor?.imageData,
+            let snapshot = UIImage(data: snapshotData) {
+            viewController.snapshotThumbnail.image = snapshot
+        } else {
+            print("No snapshot image in world map")
+        }
+        // Remove the snapshot anchor from the world map since we do not need it in the scene.
+        worldMap.anchors.removeAll(where: { $0 is SnapshotAnchor })
+        
+        return worldMap
+    }
+}
